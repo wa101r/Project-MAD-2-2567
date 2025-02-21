@@ -44,7 +44,10 @@ class HomePage extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue.shade100, Colors.purple.shade100],
+            colors: [
+              const Color.fromARGB(255, 255, 255, 255),
+              const Color.fromARGB(0, 52, 200, 180)
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -69,10 +72,13 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 20),
               Image.asset(
                 'assets/mental_health.png', // ตรวจสอบให้แน่ใจว่ามีไฟล์ภาพใน assets
-                height: 200,
+                height: 100,
+                width: 100, // สามารถตั้งค่าความกว้างตามต้องการ
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.health_and_safety,
-                      size: 100, color: Colors.blue);
+                  return const Center(
+                    child: Icon(Icons.health_and_safety,
+                        size: 100, color: Colors.blue),
+                  );
                 },
               ),
               const SizedBox(height: 20),

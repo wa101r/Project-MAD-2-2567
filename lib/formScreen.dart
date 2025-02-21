@@ -62,7 +62,10 @@ class FormScreen extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue.shade100, Colors.purple.shade100],
+            colors: [
+              const Color.fromARGB(255, 255, 255, 255),
+              const Color.fromARGB(0, 52, 200, 180)
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
