@@ -15,6 +15,43 @@ class FormScreen extends StatelessWidget {
           'แบบทดสอบสุขภาพจิต',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              TextEditingController questionController =
+                  TextEditingController();
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('เพิ่มคำถามใหม่'),
+                    content: TextField(
+                      controller: questionController,
+                      decoration: const InputDecoration(hintText: 'กรอกคำถาม'),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('ยกเลิก'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          if (questionController.text.isNotEmpty) {
+                            questionProvider
+                                .addQuestion(questionController.text);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text('เพิ่ม'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -37,31 +74,98 @@ class FormScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            question.question,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  question.question,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  TextEditingController editController =
+                                      TextEditingController(
+                                          text: question.question);
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text('แก้ไขคำถาม'),
+                                        content: TextField(
+                                          controller: editController,
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text('ยกเลิก'),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              if (editController
+                                                  .text.isNotEmpty) {
+                                                questionProvider.updateQuestion(
+                                                    index, editController.text);
+                                                Navigator.pop(context);
+                                              }
+                                            },
+                                            child: const Text('บันทึก'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  questionProvider.deleteQuestion(index);
+                                },
+                              ),
+                            ],
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("น้อย", style: TextStyle(fontSize: 14)),
-                              ...List.generate(
-                                5,
-                                (score) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 4.0),
-                                  child: Radio<int>(
-                                    value: score + 1,
-                                    groupValue: question.score,
-                                    onChanged: (value) {
-                                      questionProvider.updateScore(
-                                          index, value!);
-                                    },
+                              Expanded(
+                                flex: 4, // พื้นที่สำหรับปุ่มเลือก
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    5,
+                                    (score) => Column(
+                                      children: [
+                                        Radio<int>(
+                                          value: score + 1,
+                                          groupValue: questionProvider
+                                              .questions[index].score,
+                                          onChanged: (value) {
+                                            questionProvider.updateScore(
+                                                index, value!);
+                                          },
+                                        ),
+                                        Text(
+                                          [
+                                            'น้อยมาก',
+                                            'น้อย',
+                                            'กลาง',
+                                            'ค่อนข้างมาก',
+                                            'มาก'
+                                          ][score],
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                              Text("มาก", style: TextStyle(fontSize: 14)),
                             ],
                           ),
                         ],
