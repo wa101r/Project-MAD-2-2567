@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:account/provider/questionProvider.dart';
 import 'package:account/formScreen.dart';
-import 'package:account/historyScreen.dart'; // ✅ เพิ่ม import ไฟล์ HistoryScreen
+import 'package:account/historyScreen.dart';
+import 'package:account/therapyScreen.dart'; // ✅ นำเข้าไฟล์ TherapyScreen
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +44,7 @@ class HomePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.history), // ✅ เพิ่มไอคอนประวัติการทดสอบ
+            icon: const Icon(Icons.history),
             onPressed: () {
               Navigator.push(
                 context,
@@ -83,9 +84,9 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Image.asset(
-                'assets/mental_health.png', // ตรวจสอบให้แน่ใจว่ามีไฟล์ภาพใน assets
+                'assets/mental_health.png',
                 height: 100,
-                width: 100, // สามารถตั้งค่าความกว้างตามต้องการ
+                width: 100,
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
                     child: Icon(Icons.health_and_safety,
@@ -96,7 +97,6 @@ class HomePage extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  debugPrint("Navigating to FormScreen");
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -112,10 +112,9 @@ class HomePage extends StatelessWidget {
                 ),
                 child: const Text('เริ่มทำแบบทดสอบ'),
               ),
-              const SizedBox(height: 10), // ✅ เพิ่มระยะห่าง
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  debugPrint("Navigating to HistoryScreen");
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -126,12 +125,31 @@ class HomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  backgroundColor:
-                      const Color.fromARGB(255, 255, 255, 255), // ✅ สีปุ่ม
+                  backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                   textStyle: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 child: const Text('ดูประวัติการทดสอบ'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const TherapyScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor: const Color.fromARGB(
+                      255, 171, 255, 140), // ✅ สีเขียวสำหรับการบำบัด
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                child: const Text('การรักษาหรือบำบัด'),
               ),
             ],
           ),
