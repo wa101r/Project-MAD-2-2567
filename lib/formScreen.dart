@@ -196,8 +196,10 @@ class FormScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 10),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       String result = questionProvider.getMentalHealthResult();
+                      await questionProvider
+                          .saveTestResult(); // ✅ บันทึกผลการทดสอบลงฐานข้อมูล
                       showDialog(
                         context: context,
                         builder: (context) {

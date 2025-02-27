@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:account/provider/questionProvider.dart';
 import 'package:account/formScreen.dart';
+import 'package:account/historyScreen.dart'; // ✅ เพิ่ม import ไฟล์ HistoryScreen
 
 void main() {
   runApp(const MyApp());
@@ -40,6 +41,17 @@ class HomePage extends StatelessWidget {
           'ดูแลสุขภาพจิตของคุณ',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history), // ✅ เพิ่มไอคอนประวัติการทดสอบ
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const HistoryScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -99,6 +111,27 @@ class HomePage extends StatelessWidget {
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 child: const Text('เริ่มทำแบบทดสอบ'),
+              ),
+              const SizedBox(height: 10), // ✅ เพิ่มระยะห่าง
+              ElevatedButton(
+                onPressed: () {
+                  debugPrint("Navigating to HistoryScreen");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HistoryScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor:
+                      const Color.fromARGB(255, 255, 255, 255), // ✅ สีปุ่ม
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                child: const Text('ดูประวัติการทดสอบ'),
               ),
             ],
           ),

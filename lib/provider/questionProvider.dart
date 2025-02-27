@@ -1,23 +1,49 @@
 import 'package:flutter/foundation.dart';
+import 'package:sembast/sembast.dart';
+import 'package:account/database/questionDB.dart';
+import 'package:account/model/question.dart';
 
-class QuestionItem {
-  String question;
-  int score;
+class TestResult {
+  final int score;
+  final DateTime date;
 
-  QuestionItem({required this.question, this.score = 0});
+  TestResult({required this.score, required this.date});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'score': score,
+      'date': date.toIso8601String(),
+    };
+  }
+
+  static TestResult fromMap(Map<String, dynamic> map) {
+    return TestResult(
+      score: map['score'],
+      date: DateTime.parse(map['date']),
+    );
+  }
 }
 
 class QuestionProvider with ChangeNotifier {
   List<QuestionItem> questions = [];
+  List<TestResult> _history = [];
+
+  List<TestResult> get history => _history;
 
   void initQuestions() {
     questions = [
-      QuestionItem(question: "1. ฉันรู้สึกเครียดบ่อย ๆ"),
-      QuestionItem(question: "2. ฉันมีปัญหาในการนอนหลับ"),
-      QuestionItem(question: "3. ฉันรู้สึกโดดเดี่ยว"),
-      QuestionItem(question: "4. ฉันรู้สึกกังวลมากเกินไป"),
-      QuestionItem(question: "5. ฉันไม่มีความสุขกับชีวิตของฉัน"),
+      QuestionItem(question: "ฉันรู้สึกเครียดบ่อย ๆ"),
+      QuestionItem(question: "ฉันมีปัญหาในการนอนหลับ"),
+      QuestionItem(question: "ฉันรู้สึกหมดพลังและไม่มีแรงจูงใจ"),
+      QuestionItem(question: "ฉันมีความกังวลมากเกินไปเกี่ยวกับอนาคต"),
+      QuestionItem(question: "ฉันรู้สึกเหงาหรือโดดเดี่ยว"),
+      QuestionItem(question: "ฉันมีอารมณ์แปรปรวนง่ายและโกรธบ่อย"),
+      QuestionItem(question: "ฉันไม่มีความสุขกับชีวิตประจำวันของฉัน"),
+      QuestionItem(question: "ฉันรู้สึกว่าตัวเองไม่มีค่า"),
+      QuestionItem(question: "ฉันมีปัญหาในการจดจ่อหรือทำงานให้สำเร็จ"),
+      QuestionItem(question: "ฉันรู้สึกกดดันจากสิ่งรอบตัวบ่อย ๆ"),
     ];
+    _updateQuestionNumbers();
     notifyListeners();
   }
 
@@ -36,8 +62,9 @@ class QuestionProvider with ChangeNotifier {
 
   void updateQuestion(int index, String updatedQuestion) {
     if (index >= 0 && index < questions.length) {
-      questions[index].question = updatedQuestion;
-      _updateQuestionNumbers();
+      questions[index].question =
+          "${index + 1}. ${updatedQuestion.replaceAll(RegExp(r'^\d+\.\s*'), '')}";
+      notifyListeners();
     }
   }
 
@@ -51,34 +78,54 @@ class QuestionProvider with ChangeNotifier {
   void updateScore(int index, int score) {
     if (index >= 0 && index < questions.length) {
       questions[index].score = score;
-      debugPrint("Updated question ${index + 1} with score: $score");
       notifyListeners();
     }
   }
 
   int calculateScore() {
-    int totalScore = questions.fold(0, (sum, item) => sum + item.score);
-    debugPrint("Total Score: $totalScore");
-    return totalScore;
+    return questions.fold(0, (sum, item) => sum + item.score);
   }
 
   String getMentalHealthResult() {
     int score = calculateScore();
     int maxScore = questions.length * 5;
-    debugPrint("Final Score for Result: $score");
 
     if (score <= maxScore * 0.2) {
-      return "สุขภาพจิตดีมาก\n\nคุณมีสุขภาพจิตที่แข็งแรงและสามารถรับมือกับความเครียดได้ดี แนะนำให้คงกิจกรรมที่ทำให้รู้สึกดี เช่น ออกกำลังกาย นั่งสมาธิ และสานสัมพันธ์กับคนรอบตัว";
+      return "สุขภาพจิตดีมาก\n\nคุณมีสุขภาพจิตที่แข็งแรง...";
     }
     if (score <= maxScore * 0.4) {
-      return "สุขภาพจิตดี\n\nคุณมีสุขภาพจิตที่ดี แต่บางครั้งอาจมีความเครียดบ้าง แนะนำให้หมั่นดูแลตัวเอง พักผ่อนให้เพียงพอ และทำกิจกรรมที่ช่วยผ่อนคลาย";
+      return "สุขภาพจิตดี\n\nคุณมีสุขภาพจิตที่ดี แต่บางครั้งอาจมีความเครียดบ้าง...";
     }
     if (score <= maxScore * 0.6) {
-      return "สุขภาพจิตปานกลาง\n\nคุณอาจมีภาวะเครียดในระดับหนึ่งและควรเริ่มให้ความสำคัญกับการดูแลสุขภาพจิต เช่น การออกกำลังกาย จัดการเวลาพักผ่อน และพูดคุยกับคนที่ไว้ใจ";
+      return "สุขภาพจิตปานกลาง\n\nคุณอาจมีภาวะเครียดในระดับหนึ่ง...";
     }
     if (score <= maxScore * 0.8) {
-      return "สุขภาพจิตค่อนข้างแย่\n\nคุณอาจมีความเครียดและความกังวลในระดับสูง ควรหาเวลาผ่อนคลายและหาวิธีจัดการกับอารมณ์ เช่น พูดคุยกับเพื่อน ครอบครัว หรือผู้เชี่ยวชาญด้านสุขภาพจิต";
+      return "สุขภาพจิตค่อนข้างแย่\n\nคุณอาจมีความเครียดและความกังวลในระดับสูง...";
     }
-    return "สุขภาพจิตแย่ ควรปรึกษาผู้เชี่ยวชาญ\n\nคุณมีภาวะเครียดสูงและอาจส่งผลกระทบต่อชีวิตประจำวัน แนะนำให้พูดคุยกับนักจิตวิทยาหรือแพทย์ผู้เชี่ยวชาญเพื่อรับคำแนะนำในการดูแลสุขภาพจิตของคุณ";
+    return "สุขภาพจิตแย่ ควรปรึกษาผู้เชี่ยวชาญ\n\nคุณมีภาวะเครียดสูง...";
+  }
+
+  Future<void> saveTestResult() async {
+    int totalScore = calculateScore();
+    TestResult newResult = TestResult(score: totalScore, date: DateTime.now());
+
+    var db = await TransactionDB(dbName: "history.db").openDatabase();
+    var store = intMapStoreFactory.store('history');
+    await store.add(db, newResult.toMap());
+
+    _history.add(newResult);
+    notifyListeners();
+  }
+
+  Future<void> loadHistory() async {
+    var db = await TransactionDB(dbName: "history.db").openDatabase();
+    var store = intMapStoreFactory.store('history');
+
+    var snapshot = await store.find(db,
+        finder: Finder(sortOrders: [SortOrder('date', false)]));
+    _history =
+        snapshot.map((record) => TestResult.fromMap(record.value)).toList();
+
+    notifyListeners();
   }
 }
