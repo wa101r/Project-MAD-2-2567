@@ -5,7 +5,7 @@ import 'package:account/model/question.dart';
 
 class TestResult {
   final int score;
-  final String result; // ✅ บันทึกผลลัพธ์จริง
+  final String result;
   final DateTime date;
 
   TestResult({required this.score, required this.result, required this.date});
@@ -13,16 +13,15 @@ class TestResult {
   Map<String, dynamic> toMap() {
     return {
       'score': score,
-      'result': result, // ✅ บันทึกผลลัพธ์จริง
+      'result': result,
       'date': date.toIso8601String(),
     };
   }
 
   static TestResult fromMap(Map<String, dynamic> map) {
     return TestResult(
-      score: map['score'] ?? 0, // ✅ ถ้าคะแนนเป็น null ให้ใช้ 0
-      result: map['result'] ??
-          "ไม่พบผลลัพธ์", // ✅ ถ้า result เป็น null ให้ใช้ข้อความเริ่มต้น
+      score: map['score'] ?? 0,
+      result: map['result'] ?? "ไม่พบผลลัพธ์",
       date: DateTime.parse(map['date']),
     );
   }
@@ -127,13 +126,11 @@ class QuestionProvider with ChangeNotifier {
 
   Future<void> saveTestResult() async {
     int totalScore = calculateScore();
-    String result = getMentalHealthResult(); // ✅ คำนวณผลลัพธ์จริง
+    String result = getMentalHealthResult();
 
     TestResult newResult = TestResult(
       score: totalScore,
-      result: result.isNotEmpty
-          ? result
-          : "ไม่พบผลลัพธ์", // ✅ ป้องกัน result เป็นค่าว่าง
+      result: result.isNotEmpty ? result : "ไม่พบผลลัพธ์",
       date: DateTime.now(),
     );
 

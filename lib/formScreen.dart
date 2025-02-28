@@ -194,8 +194,7 @@ class FormScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () async {
                       String result = questionProvider.getMentalHealthResult();
-                      await questionProvider
-                          .saveTestResult(); // ✅ บันทึกผลการทดสอบลงฐานข้อมูล
+                      await questionProvider.saveTestResult();
                       showDialog(
                         context: context,
                         builder: (context) {

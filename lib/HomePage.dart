@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:account/provider/questionProvider.dart';
 import 'package:account/formScreen.dart';
 import 'package:account/historyScreen.dart';
-import 'package:account/therapyScreen.dart'; // ✅ นำเข้าไฟล์ TherapyScreen
+import 'package:account/therapyScreen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -144,8 +144,7 @@ class HomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  backgroundColor: const Color.fromARGB(
-                      255, 171, 255, 140), // ✅ สีเขียวสำหรับการบำบัด
+                  backgroundColor: const Color.fromARGB(255, 171, 255, 140),
                   textStyle: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),

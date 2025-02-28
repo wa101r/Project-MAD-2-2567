@@ -23,17 +23,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     var questionProvider = Provider.of<QuestionProvider>(context);
-    int currentMaxScore =
-        questionProvider.questions.length * 5; // ✅ คะแนนสูงสุดใหม่
+    int currentMaxScore = questionProvider.questions.length * 5;
     int maxHistoryScore = questionProvider.history.isNotEmpty
         ? questionProvider.history
             .map((e) => e.score)
             .reduce((a, b) => a > b ? a : b)
-        : currentMaxScore; // ✅ คะแนนสูงสุดในประวัติ
+        : currentMaxScore;
 
-    int maxScore = (maxHistoryScore > currentMaxScore)
-        ? maxHistoryScore
-        : currentMaxScore; // ✅ ป้องกันหลุดกรอบ
+    int maxScore =
+        (maxHistoryScore > currentMaxScore) ? maxHistoryScore : currentMaxScore;
 
     return Scaffold(
       appBar: AppBar(title: const Text("ประวัติการทดสอบ")),
@@ -91,7 +89,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               getTitlesWidget: (value, meta) {
                 return _getMentalHealthLabel(value.toInt(), maxScore);
               },
-              interval: maxScore / 4, // ✅ ทำให้แสดง 5 ระดับพอดี
+              interval: maxScore / 4,
             ),
           ),
           bottomTitles: AxisTitles(
@@ -116,14 +114,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
         borderData: FlBorderData(show: true),
         gridData: FlGridData(show: true),
         minY: 0,
-        maxY: maxScore.toDouble(), // ✅ ปรับแกน Y ตามคะแนนสูงสุดจริง
+        maxY: maxScore.toDouble(),
       ),
     );
   }
 
-  /// 🟢 ฟังก์ชันแสดงระดับสุขภาพจิตให้เหลือแค่ 5 ระดับ
   Widget _getMentalHealthLabel(int score, int maxScore) {
-    int range = maxScore ~/ 5; // ✅ แบ่งช่วงระดับสุขภาพจิตเป็น 5 ส่วน
+    int range = maxScore ~/ 5;
 
     if (score >= range * 4) {
       return const Text("🚨 แย่สุด",
@@ -157,7 +154,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           child: ListTile(
             leading: const Icon(Icons.history, color: Colors.blue),
             title: Text(
-              "ผลลัพธ์: ${result.result.split("\n\n")[0]}", // ✅ แสดงแค่ระดับสุขภาพจิต ไม่เอารายละเอียด
+              "ผลลัพธ์: ${result.result.split("\n\n")[0]}",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
