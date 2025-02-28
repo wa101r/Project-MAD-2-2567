@@ -155,10 +155,6 @@ class FormScreen extends StatelessWidget {
                                 5,
                                 (score) => Column(
                                   children: [
-                                    Text(
-                                      ['😃', '🙂', '😐', '😟', '😢'][score],
-                                      style: const TextStyle(fontSize: 24),
-                                    ),
                                     Radio<int>(
                                       value: score + 1,
                                       groupValue: questionProvider

@@ -23,8 +23,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     var questionProvider = Provider.of<QuestionProvider>(context);
-    int maxScore =
-        questionProvider.questions.length * 5; // ✅ คำนวณคะแนนสูงสุดจริง
+    int currentMaxScore =
+        questionProvider.questions.length * 5; // ✅ คะแนนสูงสุดใหม่
+    int maxHistoryScore = questionProvider.history.isNotEmpty
+        ? questionProvider.history
+            .map((e) => e.score)
+            .reduce((a, b) => a > b ? a : b)
+        : currentMaxScore; // ✅ คะแนนสูงสุดในประวัติ
+
+    int maxScore = (maxHistoryScore > currentMaxScore)
+        ? maxHistoryScore
+        : currentMaxScore; // ✅ ป้องกันหลุดกรอบ
 
     return Scaffold(
       appBar: AppBar(title: const Text("ประวัติการทดสอบ")),
