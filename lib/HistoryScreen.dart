@@ -23,6 +23,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     var questionProvider = Provider.of<QuestionProvider>(context);
+    int maxScore =
+        questionProvider.questions.length * 5; // ✅ คำนวณคะแนนสูงสุดจริง
 
     return Scaffold(
       appBar: AppBar(title: const Text("ประวัติการทดสอบ")),
@@ -42,7 +44,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
-                  Expanded(child: _buildChart(questionProvider.history)),
+                  Expanded(
+                      child: _buildChart(questionProvider.history, maxScore)),
                   const SizedBox(height: 20),
                   Expanded(child: _buildHistoryList(questionProvider.history)),
                 ],
@@ -51,7 +54,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  Widget _buildChart(List<TestResult> history) {
+  Widget _buildChart(List<TestResult> history, int maxScore) {
     if (history.isEmpty) {
       return const Center(child: Text("ไม่มีข้อมูลสำหรับแสดงกราฟ"));
     }
@@ -74,19 +77,17 @@ class _HistoryScreenState extends State<HistoryScreen> {
         titlesData: FlTitlesData(
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true, // ✅ แสดงเฉพาะตัวเลขด้านซ้าย (แกน Y)
+              showTitles: true,
+              reservedSize: 100,
               getTitlesWidget: (value, meta) {
-                return Text(
-                  value.toInt().toString(),
-                  style: const TextStyle(fontSize: 12),
-                );
+                return _getMentalHealthLabel(value.toInt(), maxScore);
               },
-              reservedSize: 40,
+              interval: maxScore / 4, // ✅ ทำให้แสดง 5 ระดับพอดี
             ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
-              showTitles: true, // ✅ แสดงตัวเลขด้านล่าง (แกน X)
+              showTitles: true,
               getTitlesWidget: (value, meta) {
                 int index = value.toInt();
                 if (index >= 0 && index < history.length) {
@@ -100,14 +101,39 @@ class _HistoryScreenState extends State<HistoryScreen> {
               reservedSize: 30,
             ),
           ),
-          rightTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false)), // ❌ ซ่อนแกนขวา
-          topTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false)), // ❌ ซ่อนด้านบน
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: true),
+        gridData: FlGridData(show: true),
+        minY: 0,
+        maxY: maxScore.toDouble(), // ✅ ปรับแกน Y ตามคะแนนสูงสุดจริง
       ),
     );
+  }
+
+  /// 🟢 ฟังก์ชันแสดงระดับสุขภาพจิตให้เหลือแค่ 5 ระดับ
+  Widget _getMentalHealthLabel(int score, int maxScore) {
+    int range = maxScore ~/ 5; // ✅ แบ่งช่วงระดับสุขภาพจิตเป็น 5 ส่วน
+
+    if (score >= range * 4) {
+      return const Text("🚨 แย่สุด",
+          style: TextStyle(fontSize: 12, color: Colors.red));
+    }
+    if (score >= range * 3) {
+      return const Text("🔴 ค่อนข้างแย่",
+          style: TextStyle(fontSize: 12, color: Colors.orange));
+    }
+    if (score >= range * 2) {
+      return const Text("🟠 ปานกลาง",
+          style: TextStyle(fontSize: 12, color: Colors.amber));
+    }
+    if (score >= range * 1) {
+      return const Text("🟡 ดี",
+          style: TextStyle(fontSize: 12, color: Colors.green));
+    }
+    return const Text("🟢 ดีมาก",
+        style: TextStyle(fontSize: 12, color: Colors.blue));
   }
 
   Widget _buildHistoryList(List<TestResult> history) {
@@ -115,15 +141,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
       itemCount: history.length,
       itemBuilder: (context, index) {
         var result = history[index];
+
         return Card(
           elevation: 4,
           margin: const EdgeInsets.all(8.0),
           child: ListTile(
             leading: const Icon(Icons.history, color: Colors.blue),
-            title: Text("คะแนน: ${result.score}",
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            title: Text(
+              "ผลลัพธ์: ${result.result.split("\n\n")[0]}", // ✅ แสดงแค่ระดับสุขภาพจิต ไม่เอารายละเอียด
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             subtitle: Text(
-                "วันที่: ${DateFormat('dd/MM/yyyy HH:mm').format(result.date)}"),
+              "วันที่: ${DateFormat('dd/MM/yyyy HH:mm').format(result.date)}",
+            ),
           ),
         );
       },

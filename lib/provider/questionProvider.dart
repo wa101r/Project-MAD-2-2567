@@ -5,20 +5,24 @@ import 'package:account/model/question.dart';
 
 class TestResult {
   final int score;
+  final String result; // ✅ บันทึกผลลัพธ์จริง
   final DateTime date;
 
-  TestResult({required this.score, required this.date});
+  TestResult({required this.score, required this.result, required this.date});
 
   Map<String, dynamic> toMap() {
     return {
       'score': score,
+      'result': result, // ✅ บันทึกผลลัพธ์จริง
       'date': date.toIso8601String(),
     };
   }
 
   static TestResult fromMap(Map<String, dynamic> map) {
     return TestResult(
-      score: map['score'],
+      score: map['score'] ?? 0, // ✅ ถ้าคะแนนเป็น null ให้ใช้ 0
+      result: map['result'] ??
+          "ไม่พบผลลัพธ์", // ✅ ถ้า result เป็น null ให้ใช้ข้อความเริ่มต้น
       date: DateTime.parse(map['date']),
     );
   }
@@ -123,7 +127,15 @@ class QuestionProvider with ChangeNotifier {
 
   Future<void> saveTestResult() async {
     int totalScore = calculateScore();
-    TestResult newResult = TestResult(score: totalScore, date: DateTime.now());
+    String result = getMentalHealthResult(); // ✅ คำนวณผลลัพธ์จริง
+
+    TestResult newResult = TestResult(
+      score: totalScore,
+      result: result.isNotEmpty
+          ? result
+          : "ไม่พบผลลัพธ์", // ✅ ป้องกัน result เป็นค่าว่าง
+      date: DateTime.now(),
+    );
 
     var db = await TransactionDB(dbName: "history.db").openDatabase();
     var store = intMapStoreFactory.store('history');
